@@ -19,18 +19,55 @@ extension Color {
         var alpha: CGFloat = 0
         
         guard uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
-            return nil // Zwraca nil, jeśli konwersja się nie powiedzie (np. dla kolorów typu grayscale)
+            return nil
         }
         
         return (red, green, blue)
     }
 }
 
-struct ContentView: View {
+func saveToFile(array: [[String]], fileName: String) {
+    if let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let fileURL = docsURL.appendingPathComponent(fileName)
+        do {
+            let JSONdata = try JSONEncoder().encode(array)
+            try JSONdata.write(to: fileURL)
+        } catch {
+            print("Błąd podczas zapisu tablicy: \(error)")
+        }
+    }
+}
+
+func readFromFile(fileName: String) -> [[String]]? {
+    if let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let fileURL = docsURL.appendingPathComponent(fileName)
+        do {
+            let data = try Data(contentsOf: fileURL)
+            let array = try JSONDecoder().decode([[String]].self, from: data)
+            return array
+        } catch {
+            print("Błąd podczas odczytu tablicy: \(error)")
+        }
+    }
+    return nil
+}
+
+
+struct ContentView: View {    
     @State var red: String = "255"
     @State var green: String = "255"
     @State var blue: String = "255"
     @State var color: Color = .red
+    
+    enum LedMode: String, CaseIterable, Identifiable {
+        case Tęcza_argb, Tęcza_rgb
+        var id: Self { self }
+    }
+    @State var selectedLedMode: LedMode = .Tęcza_argb
+    @State var whichSelectedLedMode: Int = 1
+    
+    @State var devices: [[String]] = []
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -60,28 +97,34 @@ struct ContentView: View {
                     .padding(.bottom, 30)
                     VStack{
                         HStack{
-                            Button {
-                                //
-                                
-                            } label: {
-                                VStack{
-                                    Image(systemName: "lightspectrum.horizontal")
-                                        .font(.system(size: 25, weight: .light))
-                                    Text("Wybierz tryb")
-                                        .font(.system(size: 12, weight: .light))
+                            VStack{
+                                Spacer()
+                                Text("Wybierz tryb:")
+                                    .font(.system(size: 17, weight: .light))
+                                Picker("Led Mode",selection: $selectedLedMode){
+                                    ForEach(LedMode.allCases){ledMode in
+                                        Text(ledMode.rawValue)
+                                    }
+                                    .onChange(of: selectedLedMode) {
+                                        switch(selectedLedMode){
+                                        case .Tęcza_argb:
+                                            whichSelectedLedMode=1
+                                        case .Tęcza_rgb:
+                                            whichSelectedLedMode=2
+                                        }
+                                        
+                                    }
                                 }
-                                .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color("Background").opacity(0.8))
-                                .foregroundStyle(Color("CustomPrimary"))
-                                .cornerRadius(8)
+                                .padding(.top, -10)
                             }
+                            .padding()
+                            .frame(maxWidth: .infinity,maxHeight: 80)
+                            .background(Color("Background").opacity(0.8))
+                            .accentColor(Color("CustomPrimary"))
+                            .foregroundStyle(Color("CustomPrimary"))
+                            .cornerRadius(8)
                             Button {
-                                if let rgbComponents = color.getRGBComponents() {
-                                    red = String(Int(rgbComponents.red * 255))
-                                    green = String(Int(rgbComponents.green * 255))
-                                    blue = String(Int(rgbComponents.blue * 255))
-                                }
+                                refreshColors()
                             } label: {
                                 VStack{
                                     Image(systemName: "arrow.trianglehead.2.clockwise")
@@ -102,7 +145,6 @@ struct ContentView: View {
                             .foregroundStyle(Color("CustomPrimary"))
                             .background(Color("Background").opacity(0.8))
                             .cornerRadius(8)
-                        
                     }
                     .padding()
                     .background(Gradient(colors: [Color("CustomPrimary"), Color("CustomAccent")]))
@@ -112,6 +154,7 @@ struct ContentView: View {
                         Text("Ledy Kolor:")
                             .font(.system(size: 25, weight: .light))
                             .foregroundStyle(Color("Text"))
+                            .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
                                 //
@@ -148,6 +191,7 @@ struct ContentView: View {
                         Text("Ledy Białe:")
                             .font(.system(size: 25, weight: .light))
                             .foregroundStyle(Color("Text"))
+                            .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
                                 //
@@ -188,6 +232,7 @@ struct ContentView: View {
                         Text("Tryb nocny:")
                             .font(.system(size: 25, weight: .light))
                             .foregroundStyle(Color("Text"))
+                            .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
                                 //
@@ -225,7 +270,11 @@ struct ContentView: View {
                     .background(Color("CustomSecondary").opacity(0.5))
                     .cornerRadius(12)
                     Spacer()
-                }.padding()
+                }
+                .padding()
+            }
+            .onAppear(){
+                devices = readFromFile(fileName: "devices.json") ?? []
             }
             //.navigationTitle("LED control panel")
             .toolbar{
@@ -238,6 +287,15 @@ struct ContentView: View {
             }
         }
     }
+    
+    func refreshColors(){
+        if let rgbComponents = color.getRGBComponents() {
+            red = String(Int(rgbComponents.red * 255))
+            green = String(Int(rgbComponents.green * 255))
+            blue = String(Int(rgbComponents.blue * 255))
+        }
+    }
+    
 }
 
 #Preview {

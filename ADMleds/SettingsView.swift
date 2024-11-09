@@ -1,10 +1,3 @@
-//
-//  SettingsView.swift
-//  ADMleds
-//
-//  Created by Adam Sidor on 08/11/2024.
-//
-
 import SwiftUI
 
 struct SettingsView: View {
@@ -24,14 +17,14 @@ struct SettingsView: View {
                     .padding(.all, 15)
                     Divider()
                         .background(Color("Text"))
-                    NavigationLink(destination: GeneralSetView()) {
+                    NavigationLink(destination: DevicesSetView()) {
                         Label("Wi-Fi", systemImage: "wifi")
                             .frame(maxWidth: .infinity,alignment: .leading)
                     }
                     .padding(.all,15)
                     Divider()
                         .background(Color("Text"))
-                    NavigationLink(destination: GeneralSetView()) {
+                    NavigationLink(destination: DevicesSetView()) {
                         Label("Urządzenia", systemImage: "sensor")
                             .frame(maxWidth: .infinity,alignment: .leading)
                     }
