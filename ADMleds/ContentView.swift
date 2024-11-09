@@ -1,4 +1,5 @@
 import SwiftUI
+
 extension Color {
     init(hex: UInt, alpha: Double = 1) {
         self.init(
@@ -9,7 +10,22 @@ extension Color {
             opacity: alpha
         )
     }
+    func getRGBComponents() -> (red: CGFloat, green: CGFloat, blue: CGFloat)? {
+        let uiColor = UIColor(self)
+        
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        guard uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil // Zwraca nil, jeśli konwersja się nie powiedzie (np. dla kolorów typu grayscale)
+        }
+        
+        return (red, green, blue)
+    }
 }
+
 struct ContentView: View {
     @State var red: String = "255"
     @State var green: String = "255"
@@ -18,11 +34,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack{
-                /*LinearGradient(gradient: Gradient(colors: [Color(hex: 0x7DBAF2), Color(hex: 0x3e25fe)]), startPoint: .top, endPoint: .bottom)
+                /*LinearGradient(gradient: Gradient(colors: [Color("CustomPrimary"), Color("CustomAccent")]), startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()*/
-                Color(hex: 0x011020)
+                Color("Background")
                     .ignoresSafeArea()
-                ScrollView {
+                VStack {
                     HStack{
                         Spacer()
                         HStack{
@@ -37,7 +53,7 @@ struct ContentView: View {
                                 .font(.system(size: 20, weight: .bold))
                         }
                         .padding()
-                        .background(Color(hex: 0x4304A7).opacity(0.5))
+                        .background(Color("CustomSecondary").opacity(0.5))
                         .cornerRadius(12)
                         Spacer()
                     }
@@ -56,12 +72,16 @@ struct ContentView: View {
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x011020).opacity(0.8))
-                                .foregroundStyle(Color(hex: 0x7dbaf2))
+                                .background(Color("Background").opacity(0.8))
+                                .foregroundStyle(Color("CustomPrimary"))
                                 .cornerRadius(8)
                             }
                             Button {
-                                //
+                                if let rgbComponents = color.getRGBComponents() {
+                                    red = String(Int(rgbComponents.red * 255))
+                                    green = String(Int(rgbComponents.green * 255))
+                                    blue = String(Int(rgbComponents.blue * 255))
+                                }
                             } label: {
                                 VStack{
                                     Image(systemName: "arrow.trianglehead.2.clockwise")
@@ -71,25 +91,27 @@ struct ContentView: View {
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x011020).opacity(0.8))
-                                .foregroundStyle(Color(hex: 0x7dbaf2))
+                                .background(Color("Background").opacity(0.8))
+                                .foregroundStyle(Color("CustomPrimary"))
                                 .cornerRadius(8)
                             }
                             
                         }
-                        .padding(.bottom, 10)
                         ColorPicker("Wybierz kolor:", selection: $color)
-                            .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                            .padding(.all, 10)
+                            .foregroundStyle(Color("CustomPrimary"))
+                            .background(Color("Background").opacity(0.8))
+                            .cornerRadius(8)
                         
                     }
                     .padding()
-                    .background(Gradient(colors: [Color(hex: 0x7DBAF2), Color(hex: 0x3e25fe)]))
+                    .background(Gradient(colors: [Color("CustomPrimary"), Color("CustomAccent")]))
                     .cornerRadius(12)
                     .padding(.bottom, 20)
                     VStack{
                         Text("Ledy Kolor:")
                             .font(.system(size: 25, weight: .light))
-                            .foregroundStyle(Color(hex: 0xe1f0fe))
+                            .foregroundStyle(Color("Text"))
                         HStack{
                             Button {
                                 //
@@ -101,9 +123,9 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                             Button {
@@ -116,16 +138,16 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                         }
-                        .padding(.bottom, 25)
+                        .padding(.bottom, 15)
                         Text("Ledy Białe:")
                             .font(.system(size: 25, weight: .light))
-                            .foregroundStyle(Color(hex: 0xe1f0fe))
+                            .foregroundStyle(Color("Text"))
                         HStack{
                             Button {
                                 //
@@ -137,9 +159,9 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                             Button {
@@ -152,20 +174,20 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                         }
                     }
                     .padding()
-                    .background(Color(hex: 0x4304a9).opacity(0.5))
+                    .background(Color("CustomSecondary").opacity(0.5))
                     .cornerRadius(12)
                     VStack{
                         Text("Tryb nocny:")
                             .font(.system(size: 25, weight: .light))
-                            .foregroundStyle(Color(hex: 0xe1f0fe))
+                            .foregroundStyle(Color("Text"))
                         HStack{
                             Button {
                                 //
@@ -177,9 +199,9 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                             Button {
@@ -192,15 +214,15 @@ struct ContentView: View {
                                         .font(.system(size: 25, weight: .light))
                                 }
                                 .padding()
-                                .frame(maxWidth: .infinity,maxHeight: 80)
-                                .background(Color(hex: 0x7dbaf2))
-                                .foregroundStyle(Color(hex: 0x011020).opacity(0.8))
+                                .frame(maxWidth: .infinity,maxHeight: 65)
+                                .background(Color("CustomPrimary"))
+                                .foregroundStyle(Color("Background").opacity(0.8))
                                 .cornerRadius(8)
                             }
                         }
                     }
                     .padding()
-                    .background(Color(hex: 0x4304a9).opacity(0.5))
+                    .background(Color("CustomSecondary").opacity(0.5))
                     .cornerRadius(12)
                     Spacer()
                 }.padding()
@@ -211,6 +233,7 @@ struct ContentView: View {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "slider.horizontal.3")
                     }
+                    .foregroundStyle(Color("CustomPrimary"))
                 }
             }
         }
