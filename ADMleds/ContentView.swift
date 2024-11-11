@@ -72,7 +72,9 @@ struct ContentView: View {
                             .foregroundStyle(Color("CustomPrimary"))
                             .cornerRadius(8)
                             Button {
-                                refreshColors()
+                                sendToAllDevices(devices: devices, varName: "r", value: Int(red) ?? 0)
+                                sendToAllDevices(devices: devices, varName: "g", value: Int(green) ?? 0)
+                                sendToAllDevices(devices: devices, varName: "b", value: Int(blue) ?? 0)
                             } label: {
                                 VStack{
                                     Image(systemName: "arrow.trianglehead.2.clockwise")
@@ -93,6 +95,10 @@ struct ContentView: View {
                             .foregroundStyle(Color("CustomPrimary"))
                             .background(Color("Background").opacity(0.8))
                             .cornerRadius(8)
+                            .onChange(of: color) {
+                                refreshColors()
+                            }
+                            
                     }
                     .padding()
                     .background(Gradient(colors: [Color("CustomPrimary"), Color("CustomAccent")]))
