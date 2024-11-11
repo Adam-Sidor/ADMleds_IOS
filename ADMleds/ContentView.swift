@@ -13,8 +13,9 @@ struct ContentView: View {
     @State var selectedLedMode: LedMode = .Tęcza_argb
     @State var whichSelectedLedMode: Int = 1
     
-    @State var devices: [[String]] = []
+    @State var devices: [Device] = []
     
+    @State var sendResult: String = ""
     var body: some View {
         NavigationStack {
             ZStack{
@@ -104,7 +105,7 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
-                                //
+                                sendToAllDevices(devices: devices,varName: "ledstatus",value: 1)
                             } label: {
                                 HStack{
                                     Text("Włącz")
@@ -119,7 +120,7 @@ struct ContentView: View {
                                 .cornerRadius(8)
                             }
                             Button {
-                                //
+                                sendToAllDevices(devices: devices, varName: "ledstatus", value: 0)
                             } label: {
                                 HStack{
                                     Text("Wyłącz")
@@ -182,7 +183,7 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
-                                //
+                                sendToAllDevices(devices: devices, varName: "nightmode", value: 1)
                             } label: {
                                 HStack{
                                     Text("Włącz")
@@ -197,7 +198,7 @@ struct ContentView: View {
                                 .cornerRadius(8)
                             }
                             Button {
-                                //
+                                sendToAllDevices(devices: devices, varName: "nightmode", value: 0)
                             } label: {
                                 HStack{
                                     Text("Wyłącz")
@@ -221,7 +222,7 @@ struct ContentView: View {
                 .padding()
             }
             .onAppear(){
-                devices = read2DStringFromFile(fileName: "devices.json") ?? []
+                devices = readDevices(fileName: "devices.json") ?? []
             }
             //.navigationTitle("LED control panel")
             .toolbar{

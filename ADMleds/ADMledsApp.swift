@@ -1,5 +1,12 @@
 import SwiftUI
 
+struct Device: Codable {
+    var name:String
+    var IP:String
+    var enabled:Bool
+    var edit:Bool
+}
+
 extension Color {
     init(hex: UInt, alpha: Double = 1) {
         self.init(
@@ -91,7 +98,45 @@ func read1DBoolFromFile(fileName: String) -> [Bool]? {
     return nil
 }
 
-func sendGetRequest(_ url:String, _ subUrl: String,_ value:Int) -> String {
+func saveDevices(devices: [Device],fileName: String) {
+    let fileManager = FileManager.default
+    if let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let fileURL = documentDirectory.appendingPathComponent(fileName)
+        
+        let encoder = JSONEncoder()
+        do {
+            let data = try encoder.encode(devices)
+            
+            try data.write(to: fileURL)
+        } catch {
+            print(error)
+        }
+    }
+}
+
+func readDevices(fileName: String) -> [Device]? {
+    let fileManager = FileManager.default
+    if let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+        let fileURL = documentDirectory.appendingPathComponent(fileName)
+        
+        if fileManager.fileExists(atPath: fileURL.path) {
+            do {
+                let data = try Data(contentsOf: fileURL)
+                
+                let decoder = JSONDecoder()
+                let devices = try decoder.decode([Device].self, from: data)
+                return devices
+            } catch {
+                print(error)
+            }
+        }
+    }
+    return nil
+}
+
+
+
+func sendHttp(_ url:String, _ subUrl: String,_ value:Int) -> String {
     var resultText: String = ""
     var valueString: String
     if value<10{
@@ -127,6 +172,16 @@ func sendGetRequest(_ url:String, _ subUrl: String,_ value:Int) -> String {
     
     task.resume()
     return resultText
+}
+
+func sendToAllDevices(devices: [Device],varName: String, value: Int){
+    if !devices.isEmpty{
+        for device in devices{
+            if device.enabled == true{
+                _ = sendHttp(device.IP, varName, value)
+            }
+        }
+    }
 }
 
 

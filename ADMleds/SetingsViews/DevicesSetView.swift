@@ -1,9 +1,7 @@
 import SwiftUI
 
 struct DevicesSetView: View {
-    @State var devices: [[String]] = []
-    @State var editDevice: [Bool] = []
-    @State var enabledDevices: [Bool] = [true]
+    @State var devices: [Device] = []
     @State var showAddDeviceForm: Bool = false
     @State var deviceName: String = ""
     @State var IPAddress: String = ""
@@ -21,23 +19,23 @@ struct DevicesSetView: View {
                     ForEach(devices.indices, id:\.self) { index in
                         HStack{
                             Image(systemName: "person.crop.circle")
-                            Toggle(isOn: $enabledDevices[index]) {
-                                Text(devices[index][0] + ": " + devices[index][1])
+                            Toggle(isOn: $devices[index].enabled) {
+                                Text(devices[index].name + ": " + devices[index].IP)
                                     .onTapGesture {
-                                        editDevice[index].toggle()
+                                        devices[index].edit.toggle()
                                     }
                             }
                             
                             .padding()
                         }
-                        if editDevice[index] {
+                        if devices[index].edit {
                             VStack{
                                 Section(header: Text("Edytuj urządzenie")){
-                                    TextField("Nazwa urządzenia", text: $devices[index][0])
+                                    TextField("Nazwa urządzenia", text: $devices[index].name)
                                         .padding()
                                         .background(Color("CustomSecondary").opacity(0.8))
                                         .cornerRadius(8)
-                                    TextField("Adres IP", text: $devices[index][1])
+                                    TextField("Adres IP", text: $devices[index].IP)
                                         .padding()
                                         .background(Color("CustomSecondary").opacity(0.8))
                                         .cornerRadius(8)
@@ -57,7 +55,6 @@ struct DevicesSetView: View {
                                             primaryButton:
                                                 .destructive(Text("Usuń")) {
                                                     devices.remove(at: index)
-                                                    enabledDevices.remove(at: index)
                                                 },
                                             secondaryButton:
                                                 .cancel(Text("Anuluj"))
@@ -76,15 +73,10 @@ struct DevicesSetView: View {
 
         }
         .onDisappear{
-            save2DStringToFile(array: devices, fileName: "devices.json")
-            save1DBoolToFile(array: enabledDevices, fileName: "enabledDevices.josn")
+            saveDevices(devices: devices, fileName: "devices.json")
         }
         .onAppear(){
-            devices = read2DStringFromFile(fileName: "devices.json") ?? []
-            enabledDevices = read1DBoolFromFile(fileName: "enabledDevices.josn") ?? []
-            for _ in 0..<devices.count{
-                editDevice.append(false)
-            }
+            devices = readDevices(fileName: "devices.json") ?? []
         }
         .navigationTitle("Urządzenia")
         .toolbar{
@@ -113,9 +105,7 @@ struct DevicesSetView: View {
                             isFormEmpty = true
                         }
                         else{
-                            devices.append([deviceName, IPAddress])
-                            enabledDevices.append(true)
-                            editDevice.append(false)
+                            devices.append(Device(name: deviceName, IP: IPAddress, enabled: true, edit: false))
                             deviceName.removeAll()
                             IPAddress.removeAll()
                             showAddDeviceForm=false
