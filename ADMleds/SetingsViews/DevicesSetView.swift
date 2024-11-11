@@ -8,6 +8,7 @@ struct DevicesSetView: View {
     @State var deviceName: String = ""
     @State var IPAddress: String = ""
     @State var isFormEmpty: Bool = false
+    @State var showDeleteAlert: Bool = false
     var body: some View {
         ZStack{
             Color("Background")
@@ -40,6 +41,28 @@ struct DevicesSetView: View {
                                         .padding()
                                         .background(Color("CustomSecondary").opacity(0.8))
                                         .cornerRadius(8)
+                                    Button{
+                                        showDeleteAlert=true
+                                    }
+                                    label: {
+                                        Text("Usuń urządzenie")
+                                    }
+                                    .padding()
+                                    .background(.red)
+                                    .foregroundStyle(Color("Background").opacity(0.8))
+                                    .cornerRadius(8)
+                                    .alert(isPresented: $showDeleteAlert) {
+                                        Alert(title: Text("Czy na pewno chcesz usunąć urządzenie?"),
+                                            message: nil,
+                                            primaryButton:
+                                                .destructive(Text("Usuń")) {
+                                                    devices.remove(at: index)
+                                                    enabledDevices.remove(at: index)
+                                                },
+                                            secondaryButton:
+                                                .cancel(Text("Anuluj"))
+                                        )
+                                    }
                                 }
                             }
                             .padding()
