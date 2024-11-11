@@ -3,6 +3,7 @@ import SwiftUI
 struct DevicesSetView: View {
     @State var devices: [[String]] = []
     @State var editDevice: [Bool] = []
+    @State var enabledDevice: [Bool] = [true]
     @State var showAddDeviceForm: Bool = false
     @State var deviceName: String = ""
     @State var IPAddress: String = ""
@@ -19,10 +20,13 @@ struct DevicesSetView: View {
                     ForEach(devices.indices, id:\.self) { index in
                         HStack{
                             Image(systemName: "person.crop.circle")
-                            Text(devices[index][0] + ": " + devices[index][1])
-                                .onTapGesture {
-                                    editDevice[index].toggle()
-                                }
+                            Toggle(isOn: $enabledDevice[index]) {
+                                Text(devices[index][0] + ": " + devices[index][1])
+                                    .onTapGesture {
+                                        editDevice[index].toggle()
+                                    }
+                            }
+                            
                             .padding()
                         }
                         if editDevice[index] {
@@ -49,10 +53,10 @@ struct DevicesSetView: View {
 
         }
         .onDisappear{
-            saveToFile(array: devices, fileName: "devices.json")
+            save2DStringToFile(array: devices, fileName: "devices.json")
         }
         .onAppear(){
-            devices = readFromFile(fileName: "devices.json") ?? []
+            devices = read2DStringFromFile(fileName: "devices.json") ?? []
             for _ in 0..<devices.count{
                 editDevice.append(false)
             }

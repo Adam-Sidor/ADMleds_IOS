@@ -1,58 +1,5 @@
 import SwiftUI
 
-extension Color {
-    init(hex: UInt, alpha: Double = 1) {
-        self.init(
-            .sRGB,
-            red: Double((hex >> 16) & 0xff) / 255,
-            green: Double((hex >> 08) & 0xff) / 255,
-            blue: Double((hex >> 00) & 0xff) / 255,
-            opacity: alpha
-        )
-    }
-    func getRGBComponents() -> (red: CGFloat, green: CGFloat, blue: CGFloat)? {
-        let uiColor = UIColor(self)
-        
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-        
-        guard uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
-            return nil
-        }
-        
-        return (red, green, blue)
-    }
-}
-
-func saveToFile(array: [[String]], fileName: String) {
-    if let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        let fileURL = docsURL.appendingPathComponent(fileName)
-        do {
-            let JSONdata = try JSONEncoder().encode(array)
-            try JSONdata.write(to: fileURL)
-        } catch {
-            print("Błąd podczas zapisu tablicy: \(error)")
-        }
-    }
-}
-
-func readFromFile(fileName: String) -> [[String]]? {
-    if let docsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        let fileURL = docsURL.appendingPathComponent(fileName)
-        do {
-            let data = try Data(contentsOf: fileURL)
-            let array = try JSONDecoder().decode([[String]].self, from: data)
-            return array
-        } catch {
-            print("Błąd podczas odczytu tablicy: \(error)")
-        }
-    }
-    return nil
-}
-
-
 struct ContentView: View {    
     @State var red: String = "255"
     @State var green: String = "255"
@@ -274,7 +221,7 @@ struct ContentView: View {
                 .padding()
             }
             .onAppear(){
-                devices = readFromFile(fileName: "devices.json") ?? []
+                devices = read2DStringFromFile(fileName: "devices.json") ?? []
             }
             //.navigationTitle("LED control panel")
             .toolbar{
