@@ -26,8 +26,10 @@ struct DevicesSetView: View {
                                     }
                             }
                             
-                            .padding()
                         }
+                        .padding()
+                        .background(Color("CustomSecondary").opacity(0.8))
+                        .cornerRadius(8)
                         if devices[index].edit {
                             VStack{
                                 Section(header: Text("Edytuj urządzenie")){
@@ -70,7 +72,6 @@ struct DevicesSetView: View {
                 Spacer()
             }
             .padding()
-
         }
         .onDisappear{
             saveDevices(devices: devices, fileName: "devices.json")

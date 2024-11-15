@@ -7,11 +7,11 @@ struct ContentView: View {
     @State var color: Color = .red
     
     enum LedMode: String, CaseIterable, Identifiable {
-        case Tęcza_argb, Tęcza_rgb
+        case Tęcza_argb, Tęcza_rgb, Kolor
         var id: Self { self }
     }
     @State var selectedLedMode: LedMode = .Tęcza_argb
-    @State var whichSelectedLedMode: Int = 1
+    //@State var whichSelectedLedMode: Int = 1
     
     @State var devices: [Device] = []
     
@@ -56,9 +56,13 @@ struct ContentView: View {
                                     .onChange(of: selectedLedMode) {
                                         switch(selectedLedMode){
                                         case .Tęcza_argb:
-                                            whichSelectedLedMode=1
+                                            //whichSelectedLedMode=1
+                                            sendToAllDevices(devices: devices, varName: "mode", value: 0)
                                         case .Tęcza_rgb:
-                                            whichSelectedLedMode=2
+                                            //whichSelectedLedMode=2
+                                            sendToAllDevices(devices: devices, varName: "mode", value: 1)
+                                        case .Kolor:
+                                            sendToAllDevices(devices: devices, varName: "mode", value: 2)
                                         }
                                         
                                     }
