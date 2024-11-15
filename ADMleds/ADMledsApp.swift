@@ -5,6 +5,7 @@ struct Device: Codable {
     var IP:String
     var enabled:Bool
     var edit:Bool
+    var icon:String
 }
 
 extension Color {

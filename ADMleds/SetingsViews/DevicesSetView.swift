@@ -1,5 +1,19 @@
 import SwiftUI
 
+enum DeviceIcon: String, CaseIterable,Identifiable {
+    case livingRoom = "tv.fill"
+    case bedroom = "bed.double.fill"
+    case kitchen = "refrigerator.fill"
+    case office = "desktopcomputer"
+    case garden = "leaf.fill"
+    case outdoor = "sun.max.fill"
+    case bathroom = "shower.fill"
+    case laundry = "washer.fill"
+    case light = "lightbulb.fill"
+    case moon = "moon.fill"
+    var id: Self { self }
+}
+
 struct DevicesSetView: View {
     @State var devices: [Device] = []
     @State var showAddDeviceForm: Bool = false
@@ -7,6 +21,7 @@ struct DevicesSetView: View {
     @State var IPAddress: String = ""
     @State var isFormEmpty: Bool = false
     @State var showDeleteAlert: Bool = false
+    @State var devicesIcon: [DeviceIcon] = []
     var body: some View {
         ZStack{
             Color("Background")
@@ -18,7 +33,24 @@ struct DevicesSetView: View {
                 }else{
                     ForEach(devices.indices, id:\.self) { index in
                         HStack{
-                            Image(systemName: "person.crop.circle")
+                            Picker("Icon", selection: $devicesIcon[index]) {
+                                ForEach(DeviceIcon.allCases){icon in
+                                    Image(systemName: icon.rawValue)
+                                        .tag(icon)
+                                }
+                            }
+                            .opacity(0.1)
+                            .accentColor(.red)
+                            .onChange(of: devicesIcon[index]) {
+                                devices[index].icon = devicesIcon[index].rawValue
+                            }
+                            .tint(Color("CustomSecondary").opacity(0))
+                            .overlay(
+                                Image(systemName: devicesIcon[index].rawValue) // Wyświetl wybraną ikonę w zamkniętym stanie
+                                    .foregroundColor(.primary)
+                                , alignment: .center
+                            )
+                            .frame(width: 50)
                             Toggle(isOn: $devices[index].enabled) {
                                 Text(devices[index].name + ": " + devices[index].IP)
                                     .onTapGesture {
@@ -78,6 +110,9 @@ struct DevicesSetView: View {
         }
         .onAppear(){
             devices = readDevices(fileName: "devices.json") ?? []
+            devicesIcon = devices.compactMap { device in
+                DeviceIcon(rawValue: device.icon) // Dopasuj string do odpowiedniej ikony
+            }
         }
         .navigationTitle("Urządzenia")
         .toolbar{
@@ -106,7 +141,8 @@ struct DevicesSetView: View {
                             isFormEmpty = true
                         }
                         else{
-                            devices.append(Device(name: deviceName, IP: IPAddress, enabled: true, edit: false))
+                            devices.append(Device(name: deviceName, IP: IPAddress, enabled: true, edit: false,icon: "tv.fill"))
+                            devicesIcon.append(.livingRoom)
                             deviceName.removeAll()
                             IPAddress.removeAll()
                             showAddDeviceForm=false
