@@ -139,15 +139,7 @@ func readDevices(fileName: String) -> [Device]? {
 
 func sendHttp(_ url:String, _ subUrl: String,_ value:Int) -> String {
     var resultText: String = ""
-    var valueString: String
-    if value<10{
-        valueString = "00"+String(value)
-    }
-    else if value<100{
-        valueString = "0"+String(value)
-    }else{
-        valueString = String(value)
-    }
+    let valueString: String = String(value)
     guard let url = URL(string: "http://"+url+"/"+subUrl+"="+valueString) else {
         resultText = "Nieprawidłowy URL"
         return resultText

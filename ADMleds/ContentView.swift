@@ -115,7 +115,7 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity,alignment: .leading)
                         HStack{
                             Button {
-                                sendToAllDevices(devices: devices,varName: "ledstatus",value: 1)
+                                sendToAllDevices(devices: devices,varName: "status",value: 1)
                             } label: {
                                 HStack{
                                     Text("Włącz")
@@ -130,7 +130,7 @@ struct ContentView: View {
                                 .cornerRadius(8)
                             }
                             Button {
-                                sendToAllDevices(devices: devices, varName: "ledstatus", value: 0)
+                                sendToAllDevices(devices: devices, varName: "status", value: 0)
                             } label: {
                                 HStack{
                                     Text("Wyłącz")
