@@ -31,7 +31,9 @@ Instrukcja krok po kroku, jak skonfigurować i uruchomić projekt:
    ```bash
    git clone https://github.com/Adam-Sidor/ADMleds_IOS
    ```
-2. Posiadanie skonfigurowanego [kontrolera](https://github.com/Adam-Sidor/ADMleds_ESP32).  
+2. Zbudowanie aplikacji w XCode.
+3. Dodanie developera do zaufanych.
+4. Posiadanie skonfigurowanego [kontrolera](https://github.com/Adam-Sidor/ADMleds_ESP32).  
 
 ---
 
