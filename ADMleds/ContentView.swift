@@ -7,7 +7,7 @@ struct ContentView: View {
     @State var color: Color = .red
     
     enum LedMode: String, CaseIterable, Identifiable {
-        case Tęcza_argb, Tęcza_rgb, Kolor
+        case Tęcza_argb, Tęcza_rgb, Kolor, Burza
         var id: Self { self }
     }
     @State var selectedLedMode: LedMode = .Tęcza_argb
@@ -63,6 +63,8 @@ struct ContentView: View {
                                             sendToAllDevices(devices: devices, varName: "mode", value: 1)
                                         case .Kolor:
                                             sendToAllDevices(devices: devices, varName: "mode", value: 2)
+                                        case .Burza:
+                                            sendToAllDevices(devices: devices, varName: "mode", value: 3)
                                         }
                                         
                                     }
